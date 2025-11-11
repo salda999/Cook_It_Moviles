@@ -374,14 +374,11 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
                     color: AppTheme.primaryColor,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Center(
-                    child: Text(
-                      '${index + 1}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.restaurant_menu,
+                      color: Colors.white,
+                      size: 18,
                     ),
                   ),
                 ),

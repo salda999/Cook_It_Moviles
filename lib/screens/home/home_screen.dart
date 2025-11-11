@@ -66,7 +66,7 @@ class HomeScreen extends StatelessWidget {
                 },
                 readOnly: true,
                 decoration: InputDecoration(
-                  hintText: 'Buscar recetas...',
+                  hintText: 'Buscar recetas por nombre...',
                   prefixIcon: const Icon(
                     Icons.search,
                     color: AppTheme.textSecondaryColor,

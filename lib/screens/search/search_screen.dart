@@ -88,7 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     decoration: InputDecoration(
                       hintText: widget.isRandomRecipe 
                         ? 'Generando receta aleatoria...'
-                        : 'Buscar recetas (ej: pasta, pollo, chocolate)...',
+                        : 'Buscar por nombre de receta (en inglés)...',
                       prefixIcon: Icon(
                         widget.isRandomRecipe ? Icons.shuffle : Icons.search,
                         color: AppTheme.textSecondaryColor,
@@ -254,11 +254,61 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '• Escribe ingredientes: "pasta", "pollo", "chocolate"\n• Combina ingredientes: "pasta pollo champiñones"\n• Busca por nombre: "lasaña", "tiramisú", "paella"',
+                  '• Busca por nombre de receta en inglés: "pasta", "chicken", "chocolate"\n• Ejemplos: "lasagna", "tiramisu", "paella", "carbonara"\n• Usa nombres específicos: "beef stew", "apple pie", "fish tacos"\n• También funciona con nombres parciales: "chick" encontrará recetas con "chicken"',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.blue.shade600,
                     height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Nota importante sobre el idioma
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.orange.shade200,
+                width: 1,
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.language,
+                  color: Colors.orange.shade600,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Importante',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.orange.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Las recetas están en inglés. La base de datos internacional no cuenta con traducción al español.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.orange.shade600,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -280,7 +330,7 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 10),
           
           const Text(
-            'Una vez que implementemos la conexión con la API, aquí podrás ver todas las recetas que coincidan con tu búsqueda.',
+            'Aquí podrás ver todas las recetas que coincidan con tu búsqueda.',
             style: TextStyle(
               fontSize: 14,
               color: AppTheme.textSecondaryColor,
