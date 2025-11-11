@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../constants/app_constants.dart';
 import '../search/search_screen.dart';
+import '../recipes/recipes_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -23,7 +24,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             // Saludo y bienvenida
             const Text(
-              '¡Hola, Chef! 👨‍🍳',
+              '¡Hola, Chef!',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -119,8 +120,9 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SearchScreen(
-                          initialCategory: category['apiValue']!,
+                        builder: (context) => RecipesListScreen(
+                          title: category['title']!,
+                          category: category['apiValue']!,
                         ),
                       ),
                     );
@@ -156,8 +158,9 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SearchScreen(
-                            isRandomRecipe: true,
+                          builder: (context) => const RecipesListScreen(
+                            title: 'Receta Sorpresa',
+                            isRandom: true,
                           ),
                         ),
                       );
@@ -190,43 +193,43 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// Datos de las categorías
+// Datos de las categorías - TheMealDB
 final List<Map<String, dynamic>> _categories = [
   {
     'title': 'Postres',
     'emoji': '🍰',
     'color': Colors.pink.shade100,
-    'apiValue': RecipeCategories.desserts,
+    'apiValue': RecipeCategories.dessert,
   },
   {
-    'title': 'Platos principales',
-    'emoji': '🍽️',
+    'title': 'Pollo',
+    'emoji': '🍗',
     'color': Colors.orange.shade100,
-    'apiValue': RecipeCategories.mainCourse,
+    'apiValue': RecipeCategories.chicken,
   },
   {
-    'title': 'Desayunos',
-    'emoji': '🥞',
-    'color': Colors.yellow.shade100,
-    'apiValue': RecipeCategories.breakfast,
-  },
-  {
-    'title': 'Sopas',
-    'emoji': '🍲',
+    'title': 'Carne',
+    'emoji': '🥩',
     'color': Colors.red.shade100,
-    'apiValue': RecipeCategories.soup,
+    'apiValue': RecipeCategories.beef,
   },
   {
-    'title': 'Ensaladas',
+    'title': 'Mariscos',
+    'emoji': '🦐',
+    'color': Colors.blue.shade100,
+    'apiValue': RecipeCategories.seafood,
+  },
+  {
+    'title': 'Pasta',
+    'emoji': '🍝',
+    'color': Colors.yellow.shade100,
+    'apiValue': RecipeCategories.pasta,
+  },
+  {
+    'title': 'Vegetariano',
     'emoji': '🥗',
     'color': Colors.green.shade100,
-    'apiValue': RecipeCategories.salad,
-  },
-  {
-    'title': 'Bebidas',
-    'emoji': '🥤',
-    'color': Colors.blue.shade100,
-    'apiValue': RecipeCategories.drink,
+    'apiValue': RecipeCategories.vegetarian,
   },
 ];
 

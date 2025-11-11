@@ -1,146 +1,196 @@
 class Recipe {
-  final int id;
-  final String title;
+  final String id;
+  final String name;
+  final String? drinkAlternate;
+  final String? category;
+  final String? area;
+  final String? instructions;
   final String? image;
-  final int readyInMinutes;
-  final int servings;
-  final String? summary;
-  final List<String> dishTypes;
-  final List<Ingredient>? extendedIngredients;
-  final List<InstructionStep>? analyzedInstructions;
-  final bool vegetarian;
-  final bool vegan;
-  final bool glutenFree;
-  final bool dairyFree;
-  final double? spoonacularScore;
-  final double? healthScore;
+  final String? tags;
+  final String? youtube;
+  final List<Ingredient> ingredients;
+  final String? source;
+  final String? imageSource;
+  final String? creativeCommonsConfirmed;
+  final String? dateModified;
 
   Recipe({
     required this.id,
-    required this.title,
+    required this.name,
+    this.drinkAlternate,
+    this.category,
+    this.area,
+    this.instructions,
     this.image,
-    required this.readyInMinutes,
-    required this.servings,
-    this.summary,
-    required this.dishTypes,
-    this.extendedIngredients,
-    this.analyzedInstructions,
-    required this.vegetarian,
-    required this.vegan,
-    required this.glutenFree,
-    required this.dairyFree,
-    this.spoonacularScore,
-    this.healthScore,
+    this.tags,
+    this.youtube,
+    required this.ingredients,
+    this.source,
+    this.imageSource,
+    this.creativeCommonsConfirmed,
+    this.dateModified,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
+    List<Ingredient> ingredients = [];
+    
+    // TheMealDB estructura los ingredientes de forma especial (strIngredient1, strMeasure1, etc.)
+    for (int i = 1; i <= 20; i++) {
+      String? ingredient = json['strIngredient$i'];
+      String? measure = json['strMeasure$i'];
+      
+      if (ingredient != null && ingredient.trim().isNotEmpty) {
+        ingredients.add(Ingredient(
+          name: ingredient.trim(),
+          measure: measure?.trim() ?? '',
+        ));
+      }
+    }
+
     return Recipe(
-      id: json['id'] ?? 0,
-      title: json['title'] ?? '',
-      image: json['image'],
-      readyInMinutes: json['readyInMinutes'] ?? 0,
-      servings: json['servings'] ?? 0,
-      summary: json['summary'],
-      dishTypes: List<String>.from(json['dishTypes'] ?? []),
-      extendedIngredients: json['extendedIngredients'] != null
-          ? (json['extendedIngredients'] as List)
-              .map((ingredient) => Ingredient.fromJson(ingredient))
-              .toList()
-          : null,
-      analyzedInstructions: json['analyzedInstructions'] != null
-          ? (json['analyzedInstructions'] as List)
-              .expand((instruction) => (instruction['steps'] as List))
-              .map((step) => InstructionStep.fromJson(step))
-              .toList()
-          : null,
-      vegetarian: json['vegetarian'] ?? false,
-      vegan: json['vegan'] ?? false,
-      glutenFree: json['glutenFree'] ?? false,
-      dairyFree: json['dairyFree'] ?? false,
-      spoonacularScore: json['spoonacularScore']?.toDouble(),
-      healthScore: json['healthScore']?.toDouble(),
+      id: json['idMeal'] ?? '',
+      name: json['strMeal'] ?? '',
+      drinkAlternate: json['strDrinkAlternate'],
+      category: json['strCategory'],
+      area: json['strArea'],
+      instructions: json['strInstructions'],
+      image: json['strMealThumb'],
+      tags: json['strTags'],
+      youtube: json['strYoutube'],
+      ingredients: ingredients,
+      source: json['strSource'],
+      imageSource: json['strImageSource'],
+      creativeCommonsConfirmed: json['strCreativeCommonsConfirmed'],
+      dateModified: json['dateModified'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'image': image,
-      'readyInMinutes': readyInMinutes,
-      'servings': servings,
-      'summary': summary,
-      'dishTypes': dishTypes,
-      'vegetarian': vegetarian,
-      'vegan': vegan,
-      'glutenFree': glutenFree,
-      'dairyFree': dairyFree,
-      'spoonacularScore': spoonacularScore,
-      'healthScore': healthScore,
+    Map<String, dynamic> json = {
+      'idMeal': id,
+      'strMeal': name,
+      'strDrinkAlternate': drinkAlternate,
+      'strCategory': category,
+      'strArea': area,
+      'strInstructions': instructions,
+      'strMealThumb': image,
+      'strTags': tags,
+      'strYoutube': youtube,
+      'strSource': source,
+      'strImageSource': imageSource,
+      'strCreativeCommonsConfirmed': creativeCommonsConfirmed,
+      'dateModified': dateModified,
     };
+
+    // Agregar ingredientes en el formato de TheMealDB
+    for (int i = 0; i < ingredients.length && i < 20; i++) {
+      json['strIngredient${i + 1}'] = ingredients[i].name;
+      json['strMeasure${i + 1}'] = ingredients[i].measure;
+    }
+
+    return json;
+  }
+
+  // Getter para obtener las tags como lista
+  List<String> get tagsList {
+    if (tags == null || tags!.isEmpty) return [];
+    return tags!.split(',').map((tag) => tag.trim()).toList();
+  }
+
+  // Getter para obtener las instrucciones como lista de pasos
+  List<String> get instructionSteps {
+    if (instructions == null || instructions!.isEmpty) return [];
+    return instructions!
+        .split('\r\n')
+        .where((step) => step.trim().isNotEmpty)
+        .map((step) => step.trim())
+        .toList();
   }
 }
 
 class Ingredient {
-  final int id;
   final String name;
-  final String original;
-  final double amount;
-  final String unit;
-  final String? image;
+  final String measure;
 
   Ingredient({
-    required this.id,
     required this.name,
-    required this.original,
-    required this.amount,
-    required this.unit,
-    this.image,
+    required this.measure,
   });
 
   factory Ingredient.fromJson(Map<String, dynamic> json) {
     return Ingredient(
-      id: json['id'] ?? 0,
       name: json['name'] ?? '',
-      original: json['original'] ?? '',
-      amount: json['amount']?.toDouble() ?? 0.0,
-      unit: json['unit'] ?? '',
-      image: json['image'],
+      measure: json['measure'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'name': name,
-      'original': original,
-      'amount': amount,
-      'unit': unit,
-      'image': image,
+      'measure': measure,
     };
+  }
+
+  @override
+  String toString() {
+    return measure.isEmpty ? name : '$measure $name';
   }
 }
 
-class InstructionStep {
-  final int number;
-  final String step;
+// Modelos adicionales para TheMealDB
 
-  InstructionStep({
-    required this.number,
-    required this.step,
+class MealCategory {
+  final String id;
+  final String name;
+  final String image;
+  final String description;
+
+  MealCategory({
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.description,
   });
 
-  factory InstructionStep.fromJson(Map<String, dynamic> json) {
-    return InstructionStep(
-      number: json['number'] ?? 0,
-      step: json['step'] ?? '',
+  factory MealCategory.fromJson(Map<String, dynamic> json) {
+    return MealCategory(
+      id: json['idCategory'] ?? '',
+      name: json['strCategory'] ?? '',
+      image: json['strCategoryThumb'] ?? '',
+      description: json['strCategoryDescription'] ?? '',
     );
   }
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      'number': number,
-      'step': step,
-    };
+class MealArea {
+  final String name;
+
+  MealArea({required this.name});
+
+  factory MealArea.fromJson(Map<String, dynamic> json) {
+    return MealArea(name: json['strArea'] ?? '');
+  }
+}
+
+class MealIngredient {
+  final String id;
+  final String name;
+  final String? description;
+  final String? type;
+
+  MealIngredient({
+    required this.id,
+    required this.name,
+    this.description,
+    this.type,
+  });
+
+  factory MealIngredient.fromJson(Map<String, dynamic> json) {
+    return MealIngredient(
+      id: json['idIngredient'] ?? '',
+      name: json['strIngredient'] ?? '',
+      description: json['strDescription'],
+      type: json['strType'],
+    );
   }
 }

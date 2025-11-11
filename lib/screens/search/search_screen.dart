@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../constants/app_constants.dart';
+import '../recipes/recipes_list_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialCategory;
@@ -378,41 +379,36 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
-
-    // Simular búsqueda
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      isLoading = false;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Buscando "${_searchController.text}"...'),
-        backgroundColor: AppTheme.primaryColor,
+    // Navegar a la pantalla de resultados
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecipesListScreen(
+          title: 'Resultados: "${_searchController.text}"',
+          searchQuery: _searchController.text.trim(),
+        ),
       ),
     );
   }
 
   String _getCategoryDisplayName(String category) {
     switch (category) {
-      case RecipeCategories.desserts:
+      case RecipeCategories.dessert:
         return 'Postres';
-      case RecipeCategories.mainCourse:
-        return 'Platos Principales';
+      case RecipeCategories.chicken:
+        return 'Pollo';
+      case RecipeCategories.beef:
+        return 'Carne';
+      case RecipeCategories.seafood:
+        return 'Mariscos';
+      case RecipeCategories.pasta:
+        return 'Pasta';
+      case RecipeCategories.vegetarian:
+        return 'Vegetariano';
       case RecipeCategories.breakfast:
-        return 'Desayunos';
-      case RecipeCategories.soup:
-        return 'Sopas';
-      case RecipeCategories.salad:
-        return 'Ensaladas';
-      case RecipeCategories.drink:
-        return 'Bebidas';
+        return 'Desayuno';
       default:
-        return 'Categoría';
+        return category;
     }
   }
 
