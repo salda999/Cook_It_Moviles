@@ -230,7 +230,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
                       ),
                       _StatItem(
                         icon: Icons.list,
-                        value: '${widget.recipe.instructionSteps.length}',
+                        value: '${widget.recipe.displayInstructionSteps.length}',
                         label: 'Pasos',
                       ),
                       _StatItem(
@@ -282,11 +282,14 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
   }
 
   Widget _buildIngredientsTab() {
+    // Usar displayIngredients que devuelve ingredientes traducidos si están disponibles
+    final ingredients = widget.recipe.displayIngredients;
+    
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: widget.recipe.ingredients.length,
+      itemCount: ingredients.length,
       itemBuilder: (context, index) {
-        final ingredient = widget.recipe.ingredients[index];
+        final ingredient = ingredients[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
@@ -301,14 +304,14 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
               ),
             ),
             title: Text(
-              ingredient.name,
+              ingredient.displayName,
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
               ),
             ),
-            subtitle: ingredient.measure.isNotEmpty
+            subtitle: ingredient.displayMeasure.isNotEmpty
                 ? Text(
-                    ingredient.measure,
+                    ingredient.displayMeasure,
                     style: TextStyle(
                       color: AppTheme.textSecondaryColor,
                     ),
@@ -316,7 +319,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
                 : null,
             trailing: IconButton(
               icon: const Icon(Icons.copy, size: 20),
-              onPressed: () => _copyToClipboard(ingredient.toString()),
+              onPressed: () => _copyToClipboard(ingredient.displayString),
               tooltip: 'Copiar',
             ),
           ),
@@ -326,7 +329,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
   }
 
   Widget _buildInstructionsTab() {
-    final steps = widget.recipe.instructionSteps;
+    final steps = widget.recipe.displayInstructionSteps;
     
     if (steps.isEmpty) {
       return const Center(

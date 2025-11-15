@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../constants/app_constants.dart';
 import '../models/recipe.dart';
+import 'instruction_translation_service.dart';
+import 'ingredient_translation_service.dart';
 
 class MealService {
   static const String baseUrl = ApiConstants.baseUrl;
@@ -60,7 +62,12 @@ class MealService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['meals'] != null && data['meals'].isNotEmpty) {
-          return Recipe.fromJson(data['meals'][0]);
+          final recipe = Recipe.fromJson(data['meals'][0]);
+          
+          // Traducir automáticamente las instrucciones e ingredientes
+          final recipeWithTranslatedContent = await translateRecipeContent(recipe);
+          
+          return recipeWithTranslatedContent;
         }
       }
       return null;
@@ -80,7 +87,12 @@ class MealService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['meals'] != null && data['meals'].isNotEmpty) {
-          return Recipe.fromJson(data['meals'][0]);
+          final recipe = Recipe.fromJson(data['meals'][0]);
+          
+          // Traducir automáticamente las instrucciones e ingredientes
+          final recipeWithTranslatedContent = await translateRecipeContent(recipe);
+          
+          return recipeWithTranslatedContent;
         }
       }
       return null;
@@ -274,5 +286,88 @@ class MealService {
     // Eliminar la extensión si existe
     String baseUrl = imageUrl.replaceAll(RegExp(r'\.(jpg|jpeg|png)$'), '');
     return '$baseUrl/$size';
+  }
+  
+  // MÉTODO PARA TRADUCIR INSTRUCCIONES AUTOMÁTICAMENTE
+  
+  /// Traduce las instrucciones de una receta automáticamente
+  static Future<Recipe> translateRecipeInstructions(Recipe recipe) async {
+    // Si no hay instrucciones, retornar la receta tal como está
+    if (recipe.instructions == null || recipe.instructions!.isEmpty) {
+      return recipe;
+    }
+    
+    try {
+      // Traducir las instrucciones usando el servicio de traducción
+      final translatedInstructions = await InstructionTranslationService.translateInstructions(
+        recipe.instructions!
+      );
+      
+      // Crear una nueva instancia de Recipe con las instrucciones traducidas
+      return recipe.copyWithTranslatedInstructions(translatedInstructions);
+      
+    } catch (e) {
+      // Si falla, retornar la receta original
+      return recipe;
+    }
+  }
+  
+  /// Traduce los ingredientes de una receta automáticamente
+  static Future<Recipe> translateRecipeIngredients(Recipe recipe) async {
+    // Si no hay ingredientes, retornar la receta tal como está
+    if (recipe.ingredients.isEmpty) {
+      return recipe;
+    }
+    
+    try {
+      // Lista para almacenar los ingredientes traducidos
+      List<Ingredient> translatedIngredients = [];
+      
+      // Traducir cada ingrediente
+      for (Ingredient ingredient in recipe.ingredients) {
+        String? translatedName;
+        String? translatedMeasure;
+        
+        // Traducir el nombre del ingrediente si no está vacío
+        if (ingredient.name.isNotEmpty) {
+          translatedName = await IngredientTranslationService.translateIngredient(ingredient.name);
+        }
+        
+        // Traducir la medida si no está vacía
+        if (ingredient.measure.isNotEmpty) {
+          translatedMeasure = await IngredientTranslationService.translateMeasure(ingredient.measure);
+        }
+        
+        // Crear un nuevo ingrediente con las traducciones
+        translatedIngredients.add(ingredient.copyWith(
+          nameSpanish: translatedName,
+          measureSpanish: translatedMeasure,
+        ));
+      }
+      
+      // Crear una nueva instancia de Recipe con los ingredientes traducidos
+      return recipe.copyWithTranslatedIngredients(translatedIngredients);
+      
+    } catch (e) {
+      // Si falla, retornar la receta original
+      return recipe;
+    }
+  }
+  
+  /// Traduce tanto instrucciones como ingredientes de una receta automáticamente
+  static Future<Recipe> translateRecipeContent(Recipe recipe) async {
+    try {
+      // Primero traducir las instrucciones
+      Recipe recipeWithInstructions = await translateRecipeInstructions(recipe);
+      
+      // Luego traducir los ingredientes
+      Recipe recipeWithFullTranslation = await translateRecipeIngredients(recipeWithInstructions);
+      
+      return recipeWithFullTranslation;
+      
+    } catch (e) {
+      // Si falla, retornar la receta original
+      return recipe;
+    }
   }
 }

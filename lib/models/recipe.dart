@@ -13,6 +13,10 @@ class Recipe {
   final String? imageSource;
   final String? creativeCommonsConfirmed;
   final String? dateModified;
+  
+  // Campos para contenido traducido
+  final String? instructionsSpanish;
+  final List<Ingredient>? ingredientsSpanish;
 
   Recipe({
     required this.id,
@@ -29,6 +33,8 @@ class Recipe {
     this.imageSource,
     this.creativeCommonsConfirmed,
     this.dateModified,
+    this.instructionsSpanish,
+    this.ingredientsSpanish,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
@@ -106,15 +112,73 @@ class Recipe {
         .map((step) => step.trim())
         .toList();
   }
+  
+  // Getters para instrucciones traducidas
+  
+  /// Retorna las instrucciones en español si están disponibles, sino las originales
+  String? get displayInstructions => instructionsSpanish ?? instructions;
+  
+  /// Retorna los ingredientes en español si están disponibles, sino los originales
+  List<Ingredient> get displayIngredients => ingredientsSpanish ?? ingredients;
+  
+  /// Retorna las instrucciones traducidas como lista de pasos
+  List<String> get displayInstructionSteps {
+    final instructionsToUse = displayInstructions;
+    if (instructionsToUse == null || instructionsToUse.isEmpty) return [];
+    return instructionsToUse
+        .split('\r\n')
+        .where((step) => step.trim().isNotEmpty)
+        .map((step) => step.trim())
+        .toList();
+  }
+  
+  /// Crea una copia de la receta con contenido traducido
+  Recipe copyWithTranslatedContent({
+    String? translatedInstructions,
+    List<Ingredient>? translatedIngredients,
+  }) {
+    return Recipe(
+      id: id,
+      name: name,
+      drinkAlternate: drinkAlternate,
+      category: category,
+      area: area,
+      instructions: instructions,
+      image: image,
+      tags: tags,
+      youtube: youtube,
+      ingredients: ingredients,
+      source: source,
+      imageSource: imageSource,
+      creativeCommonsConfirmed: creativeCommonsConfirmed,
+      dateModified: dateModified,
+      instructionsSpanish: translatedInstructions ?? instructionsSpanish,
+      ingredientsSpanish: translatedIngredients ?? ingredientsSpanish,
+    );
+  }
+  
+  /// Crea una copia de la receta con instrucciones traducidas (mantener compatibilidad)
+  Recipe copyWithTranslatedInstructions(String translatedInstructions) {
+    return copyWithTranslatedContent(translatedInstructions: translatedInstructions);
+  }
+  
+  /// Crea una copia de la receta con ingredientes traducidos
+  Recipe copyWithTranslatedIngredients(List<Ingredient> translatedIngredients) {
+    return copyWithTranslatedContent(translatedIngredients: translatedIngredients);
+  }
 }
 
 class Ingredient {
   final String name;
   final String measure;
+  final String? nameSpanish;
+  final String? measureSpanish;
 
   Ingredient({
     required this.name,
     required this.measure,
+    this.nameSpanish,
+    this.measureSpanish,
   });
 
   factory Ingredient.fromJson(Map<String, dynamic> json) {
@@ -134,6 +198,34 @@ class Ingredient {
   @override
   String toString() {
     return measure.isEmpty ? name : '$measure $name';
+  }
+  
+  /// Retorna el nombre en español si está disponible, sino el original
+  String get displayName => nameSpanish ?? name;
+  
+  /// Retorna la medida en español si está disponible, sino la original
+  String get displayMeasure => measureSpanish ?? measure;
+  
+  /// Retorna la representación completa en español si está disponible
+  String get displayString {
+    final dMeasure = displayMeasure;
+    final dName = displayName;
+    return dMeasure.isEmpty ? dName : '$dMeasure $dName';
+  }
+  
+  /// Crea una copia del ingrediente con los valores especificados
+  Ingredient copyWith({
+    String? name,
+    String? measure,
+    String? nameSpanish,
+    String? measureSpanish,
+  }) {
+    return Ingredient(
+      name: name ?? this.name,
+      measure: measure ?? this.measure,
+      nameSpanish: nameSpanish ?? this.nameSpanish,
+      measureSpanish: measureSpanish ?? this.measureSpanish,
+    );
   }
 }
 
