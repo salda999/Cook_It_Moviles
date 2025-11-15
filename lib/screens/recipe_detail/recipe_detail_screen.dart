@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/recipe.dart';
 import '../../theme/app_theme.dart';
+import '../../services/favorites_service.dart';
+import '../favorites/favorites_screen.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final Recipe recipe;
@@ -20,12 +22,14 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
   bool _isAppBarExpanded = true;
+  bool _isFavorite = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _scrollController.addListener(_scrollListener);
+    _isFavorite = FavoritesService.isFavorite(widget.recipe.id);
   }
 
   void _scrollListener() {
@@ -123,16 +127,12 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
                   tooltip: 'Compartir receta',
                 ),
                 IconButton(
-                  icon: const Icon(Icons.favorite_border),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Próximamente: Agregar a favoritos'),
-                        backgroundColor: AppTheme.primaryColor,
-                      ),
-                    );
-                  },
-                  tooltip: 'Agregar a favoritos',
+                  icon: Icon(
+                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorite ? Colors.pink : Colors.white,
+                  ),
+                  onPressed: _toggleFavorite,
+                  tooltip: _isFavorite ? 'Eliminar de favoritos' : 'Agregar a favoritos',
                 ),
               ],
             ),
@@ -422,6 +422,38 @@ ${widget.recipe.ingredients.map((i) => '• ${i.toString()}').join('\n')}
       const SnackBar(
         content: Text('Receta copiada al portapapeles'),
         backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+
+  Future<void> _toggleFavorite() async {
+    await FavoritesService.toggleFavorite(widget.recipe);
+    setState(() {
+      _isFavorite = FavoritesService.isFavorite(widget.recipe.id);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isFavorite
+              ? '${widget.recipe.name} agregado a favoritos'
+              : '${widget.recipe.name} eliminado de favoritos',
+        ),
+        backgroundColor: AppTheme.primaryColor,
+        action: _isFavorite 
+            ? SnackBarAction(
+                label: 'Ver favoritos',
+                textColor: Colors.white,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FavoritesScreen(),
+                    ),
+                  );
+                },
+              )
+            : null,
       ),
     );
   }

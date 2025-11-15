@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
 import 'screens/welcome/welcome_screen.dart';
+import 'services/favorites_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FavoritesService.initialize();
   runApp(const CookItApp());
 }
 

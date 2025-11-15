@@ -3,6 +3,7 @@ import '../../theme/app_theme.dart';
 import '../../constants/app_constants.dart';
 import '../search/search_screen.dart';
 import '../recipes/recipes_list_screen.dart';
+import '../favorites/favorites_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -175,10 +176,10 @@ class HomeScreen extends StatelessWidget {
                     subtitle: 'Ver guardados',
                     color: Colors.pink,
                     onTap: () {
-                      // TODO: Navegar a favoritos
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Próximamente: Favoritos'),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FavoritesScreen(),
                         ),
                       );
                     },
