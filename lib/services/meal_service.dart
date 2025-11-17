@@ -18,9 +18,17 @@ class MealService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['meals'] != null) {
-          return (data['meals'] as List)
-              .map((meal) => Recipe.fromJson(meal))
-              .toList();
+          // Traducir automáticamente las instrucciones e ingredientes para cada receta
+          List<Recipe> translatedRecipes = [];
+          final meals = (data['meals'] as List).take(15); // Limitar a 15 para mejorar rendimiento
+          
+          for (var meal in meals) {
+            final recipe = Recipe.fromJson(meal);
+            final recipeWithTranslatedContent = await translateRecipeContent(recipe);
+            translatedRecipes.add(recipeWithTranslatedContent);
+          }
+          
+          return translatedRecipes;
         }
       }
       return [];

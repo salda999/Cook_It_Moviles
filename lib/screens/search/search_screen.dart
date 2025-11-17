@@ -301,7 +301,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Las recetas están en inglés. La base de datos internacional no cuenta con traducción al español.',
+                        'La búsqueda debe hacerse en inglés, pero los ingredientes e instrucciones de las recetas se traducen automáticamente al español.',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.orange.shade600,
