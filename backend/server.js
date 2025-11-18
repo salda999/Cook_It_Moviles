@@ -105,7 +105,7 @@ app.listen(PORT, () => {
   console.log('============================');
 });
 
-// Manejo elegante del cierre del servidor
+// Manejo del cierre del servidor
 process.on('SIGINT', () => {
   console.log('\n🛑 Shutting down server gracefully...');
   process.exit(0);
